@@ -84,6 +84,18 @@ Tout tourne dans **Expo Go** (pas de dev build nécessaire).
 - Lectures et écritures simples (favoris, avis, profil, notifications) : Firestore
   direct via `src/lib/data/*` (mêmes règles de sécurité que le web).
 
+## Pièges connus
+
+- **Ne pas utiliser `StyleSheet.absoluteFillObject`** pour remplir un parent
+  (images de fond, voiles/overlays) : sous cette version (Expo 56 / RN 0.85,
+  Nouvelle Architecture), l'élément ne se rend pas. Utiliser
+  `{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }`.
+- Les images stockées en base peuvent être des **chemins relatifs au site web**
+  (ex. villes `/img/banniere/4.jpg`) : toujours passer par
+  `resolveImageUrl()` (`src/lib/config.js`).
+- Feather n'a pas d'icônes pleines : pour les états « actif » (cœur favori),
+  utiliser Ionicons (`heart` / `heart-outline`).
+
 ## Notes
 
 - **Storage** (photo de profil) nécessite le forfait Blaze sur `kapo-b451a` ;
