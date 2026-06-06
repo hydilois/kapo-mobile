@@ -1,5 +1,6 @@
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from "react-native";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { useCallback } from "react";
+import { View, Text, ScrollView, ActivityIndicator, Pressable, StyleSheet } from "react-native";
+import { Stack, useLocalSearchParams, useRouter, useFocusEffect } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
 import { getPropertyById } from "@/lib/data/properties";
 import { getConforts, getTowns } from "@/lib/data/taxonomy";
@@ -8,6 +9,8 @@ import { useFetch } from "@/hooks/useFetch";
 import { formatDate } from "@/lib/utils";
 import Gallery from "@/components/property/Gallery";
 import BookingSection from "@/components/property/BookingSection";
+import FavoriteButton from "@/components/property/FavoriteButton";
+import ReportButton from "@/components/property/ReportButton";
 import { colors, fonts, radius } from "@/theme";
 
 function Fact({ icon, label }) {
@@ -26,8 +29,9 @@ function SectionTitle({ children }) {
 // Détail logement — transposition de /logements/[id] (web).
 export default function PropertyDetailScreen() {
   const { id } = useLocalSearchParams();
+  const router = useRouter();
 
-  const { data, loading } = useFetch(async () => {
+  const { data, loading, reload } = useFetch(async () => {
     const [property, conforts, towns, comments] = await Promise.all([
       getPropertyById(id),
       getConforts(),
@@ -36,6 +40,13 @@ export default function PropertyDetailScreen() {
     ]);
     return { property, conforts, towns, comments };
   }, [id]);
+
+  // Recharge les avis au retour de l'écran « Laisser un avis »
+  useFocusEffect(
+    useCallback(() => {
+      reload();
+    }, [reload])
+  );
 
   const { property, conforts = [], towns = [], comments = [] } = data || {};
 
@@ -66,7 +77,10 @@ export default function PropertyDetailScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={{ paddingBottom: 40 }}>
       <Stack.Screen options={{ title: property.title }} />
-      <Gallery property={property} />
+      <View>
+        <Gallery property={property} />
+        <FavoriteButton property={property} style={styles.favOverlay} />
+      </View>
 
       <View style={styles.body}>
         {/* Titre + note */}
@@ -143,6 +157,12 @@ export default function PropertyDetailScreen() {
         ) : (
           <Text style={styles.empty}>Aucun avis pour le moment.</Text>
         )}
+        <Pressable style={styles.reviewBtn} onPress={() => router.push(`/avis/${property.id}`)}>
+          <Feather name="edit-3" size={14} color={colors.primary} />
+          <Text style={styles.reviewBtnText}>Laisser un avis</Text>
+        </Pressable>
+
+        <ReportButton property={property} />
       </View>
     </ScrollView>
   );
@@ -194,4 +214,17 @@ const styles = StyleSheet.create({
   commentText: { fontFamily: fonts.body, fontSize: 13, color: colors.ink, lineHeight: 19 },
   commentDate: { fontFamily: fonts.body, fontSize: 11, color: colors.muted },
   empty: { fontFamily: fonts.body, fontSize: 13, color: colors.muted },
+  favOverlay: { position: "absolute", top: 12, right: 14 },
+  reviewBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: radius.kapo,
+    height: 44,
+    marginTop: 4,
+  },
+  reviewBtnText: { fontFamily: fonts.bodySemiBold, fontSize: 13.5, color: colors.primary },
 });

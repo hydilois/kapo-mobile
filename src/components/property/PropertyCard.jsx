@@ -3,6 +3,7 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
 import { formatPrice } from "@/lib/utils";
+import FavoriteButton from "./FavoriteButton";
 import { colors, fonts, radius } from "@/theme";
 
 const FALLBACK = require("../../../assets/brand/logo-icon.png");
@@ -29,6 +30,7 @@ export default function PropertyCard({ property, width }) {
             <Text style={styles.badgeText}>-{property.reduction}%</Text>
           </View>
         ) : null}
+        <FavoriteButton property={property} size={17} style={styles.fav} />
       </View>
 
       <View style={styles.body}>
@@ -86,6 +88,7 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   badgeText: { color: colors.white, fontFamily: fonts.bodySemiBold, fontSize: 11 },
+  fav: { position: "absolute", top: 8, right: 8 },
   body: { padding: 10, gap: 3 },
   titleRow: { flexDirection: "row", alignItems: "center", gap: 6 },
   title: { flex: 1, fontFamily: fonts.bodySemiBold, fontSize: 14, color: colors.ink },

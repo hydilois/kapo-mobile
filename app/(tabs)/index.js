@@ -21,6 +21,7 @@ import CategoryGrid from "@/components/home/CategoryGrid";
 import TownGrid from "@/components/home/TownGrid";
 import Testimonials from "@/components/home/Testimonials";
 import PropertyCard from "@/components/property/PropertyCard";
+import NotificationBell from "@/components/layout/NotificationBell";
 import { API_BASE_URL } from "@/lib/config";
 import { colors, fonts, radius } from "@/theme";
 
@@ -75,8 +76,11 @@ export default function HomeScreen() {
       <ImageBackground source={HERO} style={[styles.hero, { paddingTop: insets.top + 12 }]}>
         <View style={styles.heroOverlay} />
         <View style={styles.heroContent}>
-          <View style={styles.logoWrap}>
-            <Image source={LOGO} style={styles.logo} contentFit="contain" />
+          <View style={styles.topBar}>
+            <View style={styles.logoWrap}>
+              <Image source={LOGO} style={styles.logo} contentFit="contain" />
+            </View>
+            <NotificationBell />
           </View>
           <Text style={styles.heroTitle}>Se loger au Cameroun, à la méthode africaine</Text>
           <SearchForm towns={towns} categories={categories} />
@@ -149,6 +153,7 @@ const styles = StyleSheet.create({
   hero: { paddingBottom: 24 },
   heroOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(0,43,94,0.55)" },
   heroContent: { paddingHorizontal: 16, gap: 14 },
+  topBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   logoWrap: {
     alignSelf: "flex-start",
     backgroundColor: colors.white,
