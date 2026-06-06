@@ -1,6 +1,7 @@
 import { View, Text, Pressable, FlatList, StyleSheet } from "react-native";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
+import { resolveImageUrl } from "@/lib/config";
 import { colors, fonts, radius } from "@/theme";
 
 // Catégories de logements — liste horizontale (web : grille avec overlay).
@@ -22,7 +23,12 @@ export default function CategoryGrid({ categories = [] }) {
             router.push({ pathname: "/(tabs)/recherche", params: { category: item.id } })
           }
         >
-          <Image source={{ uri: item.image }} style={styles.image} contentFit="cover" transition={150} />
+          <Image
+            source={{ uri: resolveImageUrl(item.image) }}
+            style={styles.image}
+            contentFit="cover"
+            transition={150}
+          />
           <View style={styles.overlay} />
           <Text style={styles.name} numberOfLines={2}>
             {item.name}
@@ -42,7 +48,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     backgroundColor: colors.navy,
   },
-  image: { ...StyleSheet.absoluteFillObject },
+  image: { position: "absolute", top: 0, left: 0, width: "100%", height: "100%" },
   overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(0,43,94,0.35)" },
   name: {
     position: "absolute",
