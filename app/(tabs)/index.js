@@ -77,11 +77,15 @@ export default function HomeScreen() {
   const { categories = [], towns = [], testimonials = [], featured = [] } = home.data || {};
 
   return (
-    <ScrollView
-      style={styles.screen}
-      contentContainerStyle={{ paddingBottom: 32 }}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
-    >
+    <View style={styles.screen}>
+      {/* Bandeau opaque sous la barre d'état (transparente en edge-to-edge) :
+          sans lui, le contenu défile visiblement derrière l'heure/batterie. */}
+      <View style={[styles.statusBarBackdrop, { height: insets.top }]} />
+      <ScrollView
+        style={styles.screen}
+        contentContainerStyle={{ paddingBottom: 32 }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
+      >
       {/* Hero + recherche */}
       <ImageBackground source={HERO} style={[styles.hero, { paddingTop: insets.top + 12 }]}>
         <View style={styles.heroOverlay} />
@@ -151,15 +155,24 @@ export default function HomeScreen() {
         </Pressable>
       </View>
 
-      <Section title="Ils nous font confiance">
-        <Testimonials testimonials={testimonials} />
-      </Section>
-    </ScrollView>
+        <Section title="Ils nous font confiance">
+          <Testimonials testimonials={testimonials} />
+        </Section>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
+  statusBarBackdrop: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: colors.navy,
+    zIndex: 10,
+  },
   hero: { paddingBottom: 24 },
   heroOverlay: {
     position: "absolute",
