@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet } from "react-native";
 import { useRouter, usePathname } from "expo-router";
-import Feather from "@expo/vector-icons/Feather";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { isFavorited, toggleFavorite } from "@/lib/data/favorites";
 import { useAuth } from "@/context/AuthContext";
 import { colors } from "@/theme";
@@ -51,12 +51,10 @@ export default function FavoriteButton({ property, size = 20, style }) {
 
   return (
     <Pressable style={[styles.btn, style]} onPress={onPress} hitSlop={8}>
-      <Feather
-        name="heart"
-        size={size}
+      <Ionicons
+        name={fav ? "heart" : "heart-outline"}
+        size={size + 2}
         color={fav ? colors.primary : colors.muted}
-        // Feather n'a pas de cœur plein : on joue sur la couleur + fond
-        style={fav ? { textShadowColor: colors.primary, textShadowRadius: 1 } : null}
       />
     </Pressable>
   );

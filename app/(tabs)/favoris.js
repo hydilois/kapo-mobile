@@ -3,6 +3,7 @@ import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
 import { Image } from "expo-image";
 import { useRouter, useFocusEffect } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { getUserFavorites, toggleFavorite } from "@/lib/data/favorites";
 import { useAuth } from "@/context/AuthContext";
 import { useFetch } from "@/hooks/useFetch";
@@ -78,7 +79,7 @@ function FavoritesContent() {
             </Text>
           </View>
           <Pressable style={styles.heart} onPress={() => remove(item)} hitSlop={8}>
-            <Feather name="heart" size={18} color={colors.primary} />
+            <Ionicons name="heart" size={20} color={colors.primary} />
           </Pressable>
         </Pressable>
       )}
