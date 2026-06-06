@@ -9,7 +9,8 @@ import {
   StyleSheet,
 } from "react-native";
 import { Image } from "expo-image";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
+import { setStatusBarStyle } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Feather from "@expo/vector-icons/Feather";
 import * as WebBrowser from "expo-web-browser";
@@ -47,6 +48,15 @@ export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [refreshing, setRefreshing] = useState(false);
+
+  // Le hero navy demande des icônes de barre d'état claires ; on restaure
+  // le style sombre en quittant l'onglet (les autres écrans sont clairs).
+  useFocusEffect(
+    useCallback(() => {
+      setStatusBarStyle("light");
+      return () => setStatusBarStyle("dark");
+    }, [])
+  );
 
   const home = useFetch(async () => {
     const [categories, towns, testimonials, featured] = await Promise.all([
