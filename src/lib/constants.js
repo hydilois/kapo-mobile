@@ -1,0 +1,65 @@
+// Constantes métier reprises du projet Symfony source.
+
+// Noms des collections Firestore
+export const COLLECTIONS = {
+  USERS: "users",
+  PROPERTIES: "properties",
+  RESERVATIONS: "reservations",
+  COMMENTS: "comments",
+  CATEGORIES: "categories",
+  TOWNS: "towns",
+  CONFORTS: "conforts", // équipements
+  TESTIMONIALS: "testimonials",
+  PAYMENT_METHODS: "paymentMethods",
+  NOTIFICATIONS: "notifications",
+  FAVORITES: "favorites",
+  BANK: "bank", // configuration paiement globale (singleton)
+  REPORTS: "reports", // signalements d'annonces
+};
+
+// Motifs de signalement / masquage d'annonce
+export const REPORT_REASONS = [
+  "Annonce frauduleuse / arnaque",
+  "Photos trompeuses ou volées",
+  "Logement inexistant",
+  "Contenu inapproprié",
+  "Prix ou informations erronés",
+  "Autre",
+];
+
+// Rôles utilisateur (cf. User::roles dans Symfony)
+export const ROLES = {
+  USER: "ROLE_USER",
+  HOST: "ROLE_HOST",
+  ADMIN: "ROLE_ADMIN",
+  SUPER_ADMIN: "ROLE_SUPER_ADMIN",
+};
+
+// Types de compte (User::typeCompte)
+export const USER_TYPES = ["Propriétaire", "Professionnel du tourisme"];
+
+// Statuts d'une annonce (Property::STATUS)
+export const PROPERTY_STATUS = {
+  PENDING: "En cours",
+  VALIDATED: "Validé",
+};
+
+// Statuts d'une réservation (Reservation::STATUS)
+export const RESERVATION_STATUS = {
+  SENT: "Envoyée",
+  ACCEPTED: "Acceptée",
+  REFUSED: "Refusée",
+  CANCELLED: "Annulée",
+  COMPLETED: "Terminée",
+};
+
+// Options de paiement (méthode africaine en premier)
+export const PAYMENT_OPTIONS = {
+  MOBILE_MONEY: "Mobile Money",
+  VISA: "Visa",
+  PAYPAL: "Paypal",
+  PAYLIB: "Paylib",
+};
+
+// Types de moyen de paiement hôte (PaymentMethod::OPTIONS)
+export const PAYMENT_METHOD_TYPES = ["Compte Bancaire", "Compte MoMo"];
