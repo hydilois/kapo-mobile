@@ -1,0 +1,37 @@
+{
+  "cli": {
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "AIzaSyB9wExEGT9QKGU9iEik5UmQnhSC4YHY3X8",
+        "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "kapo-b451a.firebaseapp.com",
+        "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "kapo-b451a",
+        "EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET": "kapo-b451a.firebasestorage.app",
+        "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "701446114496",
+        "EXPO_PUBLIC_FIREBASE_APP_ID": "1:701446114496:web:d2c13aed9e378944c2b125",
+        "EXPO_PUBLIC_API_BASE_URL": "https://kapo.elshaseries.com"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "AIzaSyB9wExEGT9QKGU9iEik5UmQnhSC4YHY3X8",
+        "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "kapo-b451a.firebaseapp.com",
+        "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "kapo-b451a",
+        "EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET": "kapo-b451a.firebasestorage.app",
+        "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "701446114496",
+        "EXPO_PUBLIC_FIREBASE_APP_ID": "1:701446114496:web:d2c13aed9e378944c2b125",
+        "EXPO_PUBLIC_API_BASE_URL": "https://kapo.elshaseries.com"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

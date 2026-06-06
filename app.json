@@ -35,6 +35,13 @@
       ],
       "expo-image",
       "expo-web-browser"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b08f974a-99be-4a71-ac20-7553643b32ba"
+      }
+    },
+    "owner": "elsha"
   }
 }
