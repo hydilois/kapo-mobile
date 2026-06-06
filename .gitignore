@@ -42,3 +42,6 @@ yarn-error.*
 
 # env
 .env
+
+# artefacts de build locaux
+build-*.apk
