@@ -151,7 +151,14 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
   hero: { paddingBottom: 24 },
-  heroOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(0,43,94,0.55)" },
+  heroOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0,43,94,0.55)",
+  },
   heroContent: { paddingHorizontal: 16, gap: 14 },
   topBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   logoWrap: {
