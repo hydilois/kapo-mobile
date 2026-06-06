@@ -14,6 +14,7 @@ import {
   Montserrat_700Bold,
   Montserrat_800ExtraBold,
 } from "@expo-google-fonts/montserrat";
+import { AuthProvider } from "@/context/AuthContext";
 import { colors, fonts } from "@/theme";
 
 SplashScreen.preventAutoHideAsync();
@@ -36,7 +37,7 @@ export default function RootLayout() {
   if (!fontsLoaded) return null;
 
   return (
-    <>
+    <AuthProvider>
       <StatusBar style="dark" />
       <Stack
         screenOptions={{
@@ -48,6 +49,6 @@ export default function RootLayout() {
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
-    </>
+    </AuthProvider>
   );
 }
