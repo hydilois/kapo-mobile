@@ -4,7 +4,7 @@ import { useLocalSearchParams } from "expo-router";
 import SelectField from "@/components/ui/SelectField";
 import PropertyCard from "@/components/property/PropertyCard";
 import { searchProperties } from "@/lib/data/properties";
-import { getCategories, getTowns } from "@/lib/data/taxonomy";
+import { getCategories, getActiveTowns } from "@/lib/data/taxonomy";
 import { useFetch } from "@/hooks/useFetch";
 import { colors, fonts } from "@/theme";
 
@@ -28,7 +28,7 @@ export default function SearchScreen() {
   }, [params.town, params.category, params.travelers]);
 
   const taxonomy = useFetch(async () => {
-    const [towns, categories] = await Promise.all([getTowns(), getCategories()]);
+    const [towns, categories] = await Promise.all([getActiveTowns(), getCategories()]);
     return { towns, categories };
   }, []);
 

@@ -13,7 +13,7 @@ import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Feather from "@expo/vector-icons/Feather";
 import * as WebBrowser from "expo-web-browser";
-import { getCategories, getTowns, getTestimonials } from "@/lib/data/taxonomy";
+import { getCategories, getActiveTowns, getTestimonials } from "@/lib/data/taxonomy";
 import { getFeaturedProperties } from "@/lib/data/properties";
 import { useFetch } from "@/hooks/useFetch";
 import SearchForm from "@/components/home/SearchForm";
@@ -51,7 +51,7 @@ export default function HomeScreen() {
   const home = useFetch(async () => {
     const [categories, towns, testimonials, featured] = await Promise.all([
       getCategories(),
-      getTowns(),
+      getActiveTowns(),
       getTestimonials(),
       getFeaturedProperties({ max: 8 }),
     ]);

@@ -18,3 +18,16 @@ export const getCategories = () => all(COLLECTIONS.CATEGORIES);
 export const getTowns = () => all(COLLECTIONS.TOWNS);
 export const getConforts = () => all(COLLECTIONS.CONFORTS, "libelle");
 export const getTestimonials = () => all(COLLECTIONS.TESTIMONIALS, "author");
+
+// Villes ayant au moins un logement publié — même logique que
+// fetchActiveTowns() du site web (repli : toutes les villes).
+export async function getActiveTowns() {
+  const { getPublishedProperties } = await import("./properties");
+  const [towns, properties] = await Promise.all([
+    getTowns(),
+    getPublishedProperties({ max: 200 }),
+  ]);
+  const usedTownIds = new Set(properties.map((p) => p.townId).filter(Boolean));
+  const active = towns.filter((t) => usedTownIds.has(t.id));
+  return active.length ? active : towns;
+}
