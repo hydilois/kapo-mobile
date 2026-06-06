@@ -27,10 +27,11 @@ export default function TownGrid({ towns = [] }) {
             contentFit="cover"
             transition={150}
           />
-          <View style={styles.overlay} />
-          <Text style={styles.name} numberOfLines={1}>
-            {item.name}
-          </Text>
+          <View style={styles.band}>
+            <Text style={styles.name} numberOfLines={1}>
+              {item.name}
+            </Text>
+          </View>
         </Pressable>
       )}
     />
@@ -47,14 +48,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.navy,
   },
   image: { position: "absolute", top: 0, left: 0, width: "100%", height: "100%" },
-  overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(0,43,94,0.35)" },
-  name: {
+  band: {
     position: "absolute",
-    bottom: 8,
-    left: 10,
-    right: 10,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0,43,94,0.78)",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  name: {
     color: colors.white,
     fontFamily: fonts.bodySemiBold,
-    fontSize: 14,
+    fontSize: 13.5,
   },
 });
