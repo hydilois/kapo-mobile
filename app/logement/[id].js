@@ -10,6 +10,7 @@ import { formatDate } from "@/lib/utils";
 import Gallery from "@/components/property/Gallery";
 import BookingSection from "@/components/property/BookingSection";
 import FavoriteButton from "@/components/property/FavoriteButton";
+import ShareButton from "@/components/property/ShareButton";
 import ReportButton from "@/components/property/ReportButton";
 import { colors, fonts, radius } from "@/theme";
 
@@ -79,7 +80,10 @@ export default function PropertyDetailScreen() {
       <Stack.Screen options={{ title: property.title }} />
       <View>
         <Gallery property={property} />
-        <FavoriteButton property={property} style={styles.favOverlay} />
+        <View style={styles.galleryActions}>
+          <ShareButton property={property} />
+          <FavoriteButton property={property} />
+        </View>
       </View>
 
       <View style={styles.body}>
@@ -214,7 +218,13 @@ const styles = StyleSheet.create({
   commentText: { fontFamily: fonts.body, fontSize: 13, color: colors.ink, lineHeight: 19 },
   commentDate: { fontFamily: fonts.body, fontSize: 11, color: colors.muted },
   empty: { fontFamily: fonts.body, fontSize: 13, color: colors.muted },
-  favOverlay: { position: "absolute", top: 12, right: 14 },
+  galleryActions: {
+    position: "absolute",
+    top: 12,
+    right: 14,
+    flexDirection: "row",
+    gap: 8,
+  },
   reviewBtn: {
     flexDirection: "row",
     alignItems: "center",
