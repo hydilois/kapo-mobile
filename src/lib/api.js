@@ -86,6 +86,16 @@ export async function capturePaypalPayment({ reservationId, token }) {
   return handle(res); // { status }
 }
 
+// --- Annulation par le voyageur d'une réservation non payée ---
+export async function cancelReservationApi({ reservationId }) {
+  const res = await fetch(url("/api/reservations/cancel"), {
+    method: "POST",
+    headers: await authHeaders(),
+    body: JSON.stringify({ reservationId }),
+  });
+  return handle(res); // { status: "Annulée" }
+}
+
 // --- Vérification e-mail (Resend) ---
 export async function sendVerificationEmail() {
   const res = await fetch(url("/api/auth/send-verification"), {

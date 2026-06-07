@@ -1,8 +1,9 @@
-import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
+import { View, Text, FlatList, Pressable, Alert, StyleSheet } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import Feather from "@expo/vector-icons/Feather";
 import { getUserReservations } from "@/lib/data/reservations";
+import { cancelReservationApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useFetch } from "@/hooks/useFetch";
 import { formatPrice, formatDate, reservationNumber } from "@/lib/utils";
@@ -31,6 +32,7 @@ function ReservationsContent() {
   const router = useRouter();
   const { user } = useAuth();
   const { data, loading, reload } = useFetch(() => getUserReservations(user.uid), [user.uid]);
+  const [actingId, setActingId] = useState(null);
 
   // Recharge à chaque retour sur l'onglet (après un paiement par exemple)
   useFocusEffect(
@@ -40,6 +42,41 @@ function ReservationsContent() {
   );
 
   const list = data || [];
+
+  // Une réservation « Envoyée » jamais payée peut être réglée ou annulée.
+  const isUnpaidSent = (r) =>
+    r.status === RESERVATION_STATUS.SENT && !r.isClosed && (r.paidAmount || 0) === 0;
+
+  function cancel(r) {
+    Alert.alert(
+      "Annuler la réservation",
+      `Annuler la réservation ${r.numeroReservation || ""} ? Les dates seront libérées.`,
+      [
+        { text: "Non", style: "cancel" },
+        {
+          text: "Oui, annuler",
+          style: "destructive",
+          onPress: async () => {
+            setActingId(r.id);
+            try {
+              await cancelReservationApi({ reservationId: r.id });
+              reload();
+            } catch (e) {
+              Alert.alert("Annulation", e?.message || "Une erreur est survenue. Réessayez.");
+            } finally {
+              setActingId(null);
+            }
+          },
+        },
+      ]
+    );
+  }
+
+  function payNow(r) {
+    router.push(
+      `/reservation/${r.propertyId}?arrivee=${r.dateArrivee}&depart=${r.dateDepart}&resume=${r.id}`
+    );
+  }
 
   return (
     <FlatList
@@ -78,6 +115,24 @@ function ReservationsContent() {
               <Text style={styles.number}>{item.numeroReservation || reservationNumber(item.id)}</Text>
               <Text style={styles.total}>{formatPrice(item.total)}</Text>
             </View>
+            {isUnpaidSent(item) ? (
+              <View style={styles.actions}>
+                <Pressable style={styles.payBtn} onPress={() => payNow(item)}>
+                  <Feather name="credit-card" size={14} color={colors.white} />
+                  <Text style={styles.payBtnText}>Payer maintenant</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.cancelBtn, actingId === item.id && { opacity: 0.5 }]}
+                  disabled={actingId === item.id}
+                  onPress={() => cancel(item)}
+                >
+                  <Feather name="x" size={14} color={colors.danger} />
+                  <Text style={styles.cancelBtnText}>
+                    {actingId === item.id ? "Annulation…" : "Annuler"}
+                  </Text>
+                </Pressable>
+              </View>
+            ) : null}
           </Pressable>
         );
       }}
@@ -107,6 +162,30 @@ const styles = StyleSheet.create({
   },
   number: { fontFamily: fonts.bodyMedium, fontSize: 12, color: colors.navy },
   total: { fontFamily: fonts.bodyBold, fontSize: 14.5, color: colors.primary },
+  actions: { flexDirection: "row", gap: 8, marginTop: 8 },
+  payBtn: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    height: 38,
+  },
+  payBtnText: { color: colors.white, fontFamily: fonts.bodySemiBold, fontSize: 13 },
+  cancelBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 5,
+    borderWidth: 1,
+    borderColor: "#fecaca",
+    borderRadius: 8,
+    height: 38,
+    paddingHorizontal: 14,
+  },
+  cancelBtnText: { color: colors.danger, fontFamily: fonts.bodyMedium, fontSize: 13 },
   empty: { alignItems: "center", gap: 10, marginTop: 60 },
   emptyText: { fontFamily: fonts.body, fontSize: 13.5, color: colors.muted },
 });

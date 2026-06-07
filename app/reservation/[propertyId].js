@@ -58,7 +58,9 @@ export default function ReservationScreen() {
 
 function ReservationContent() {
   const router = useRouter();
-  const { propertyId, arrivee, depart } = useLocalSearchParams();
+  // `resume` : reprise du paiement d'une réservation existante (« Payer
+  // maintenant » depuis Mes réservations) — on ne recrée pas de réservation.
+  const { propertyId, arrivee, depart, resume } = useLocalSearchParams();
   const [method, setMethod] = useState("payunit");
   const [phase, setPhase] = useState("idle"); // idle | processing | success | failed
   const [error, setError] = useState("");
@@ -74,13 +76,17 @@ function ReservationContent() {
     setError("");
     setPhase("processing");
     try {
-      // Étape 1 : création de la réservation (statut « Envoyée »)
-      const { reservation } = await createReservation({ propertyId, arrivee, depart });
+      // Étape 1 : reprise d'une réservation existante (resume) ou création
+      let reservationId = resume;
+      if (!reservationId) {
+        const { reservation } = await createReservation({ propertyId, arrivee, depart });
+        reservationId = reservation.id;
+      }
       // Étape 2 : initiation du paiement selon la méthode
-      const { url, simulated } = await INITIATORS[method]({ reservationId: reservation.id });
+      const { url, simulated } = await INITIATORS[method]({ reservationId });
       if (simulated) {
         // Mode simulation (clés absentes côté serveur) : confirmation directe
-        const { status } = await SIMULATED_CONFIRM[method](reservation.id);
+        const { status } = await SIMULATED_CONFIRM[method](reservationId);
         setPhase(status === "SUCCESSFUL" ? "success" : "failed");
         if (status !== "SUCCESSFUL") setError("Le paiement n'a pas abouti. Réessayez.");
         return;
@@ -89,7 +95,7 @@ function ReservationContent() {
       setPhase("idle");
       router.push({
         pathname: "/reservation/paiement",
-        params: { url: encodeURIComponent(url), provider: method, reservationId: reservation.id },
+        params: { url: encodeURIComponent(url), provider: method, reservationId },
       });
     } catch (err) {
       setPhase("failed");
@@ -119,6 +125,16 @@ function ReservationContent() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
       <Stack.Screen options={{ title: "Réservation" }} />
+
+      {resume ? (
+        <View style={styles.resumeBanner}>
+          <Feather name="info" size={14} color="#1d4ed8" />
+          <Text style={styles.resumeText}>
+            Reprise du paiement de votre réservation en attente — aucune nouvelle réservation ne
+            sera créée.
+          </Text>
+        </View>
+      ) : null}
 
       {/* Récapitulatif */}
       <View style={styles.card}>
@@ -258,4 +274,14 @@ const styles = StyleSheet.create({
     color: colors.muted,
   },
   muted: { fontFamily: fonts.body, fontSize: 13, color: colors.muted },
+  resumeBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: "#EFF6FF",
+    borderRadius: radius.kapo,
+    padding: 12,
+    marginBottom: 14,
+  },
+  resumeText: { flex: 1, fontFamily: fonts.body, fontSize: 12.5, color: "#1d4ed8", lineHeight: 18 },
 });
