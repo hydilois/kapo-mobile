@@ -31,6 +31,18 @@ export async function uploadUserAvatar(uid, uri) {
   return { url, path };
 }
 
+// Téléverse une photo d'annonce et retourne { url, path }.
+export async function uploadPropertyImage(uid, uri) {
+  if (!storage) throw new Error("Firebase Storage non configuré.");
+  const blob = await uriToBlob(uri);
+  const ext = (uri.split(".").pop() || "jpg").toLowerCase().slice(0, 4);
+  const path = `properties/${uid}/${stamp()}-${Math.round(Math.random() * 1e6)}.${ext}`;
+  const objectRef = ref(storage, path);
+  await uploadBytes(objectRef, blob, { contentType: blob.type || "image/jpeg" });
+  const url = await getDownloadURL(objectRef);
+  return { url, path };
+}
+
 // Supprime un objet Storage à partir de son chemin (silencieux si absent).
 export async function deleteStorageObject(path) {
   if (!storage || !path) return;

@@ -15,7 +15,21 @@ export const COLLECTIONS = {
   FAVORITES: "favorites",
   BANK: "bank", // configuration paiement globale (singleton)
   REPORTS: "reports", // signalements d'annonces
+  PAYOUTS: "payouts", // versements dus aux hôtes
 };
+
+// Statuts d'un versement à l'hôte (payout).
+// Cycle : À venir (séquestre) → À verser (libéré, prêt à payer) → Versé.
+export const PAYOUT_STATUS = {
+  UPCOMING: "À venir",
+  DUE: "À verser",
+  PAID: "Versé",
+  FAILED: "Échec",
+  CANCELLED: "Annulé",
+};
+
+// Commission Kapo par défaut (%) si non définie dans bank/default.commissionRate.
+export const DEFAULT_COMMISSION_RATE = 12;
 
 // Motifs de signalement / masquage d'annonce
 export const REPORT_REASONS = [

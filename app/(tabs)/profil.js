@@ -125,6 +125,18 @@ function ProfileContent() {
         </View>
       ) : null}
 
+      {/* Bascule Espace hôte */}
+      <Pressable style={styles.hostBanner} onPress={() => router.push("/hote")}>
+        <View style={styles.hostIcon}>
+          <Feather name="home" size={18} color={colors.white} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.hostTitle}>Espace hôte</Text>
+          <Text style={styles.hostSub}>Gérer mes annonces, réservations et versements</Text>
+        </View>
+        <Feather name="chevron-right" size={18} color={colors.secondary} />
+      </Pressable>
+
       {/* Menu */}
       <View style={styles.menu}>
         <MenuItem
@@ -203,6 +215,26 @@ const styles = StyleSheet.create({
     color: colors.secondaryDark,
     textDecorationLine: "underline",
   },
+  hostBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    borderWidth: 1,
+    borderColor: "#FCE3C4",
+    backgroundColor: "#FFF8EF",
+    borderRadius: radius.kapo,
+    padding: 14,
+  },
+  hostIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: colors.secondary,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  hostTitle: { fontFamily: fonts.bodySemiBold, fontSize: 14, color: colors.navy },
+  hostSub: { fontFamily: fonts.body, fontSize: 12, color: colors.muted },
   menu: {
     borderWidth: 1,
     borderColor: colors.border,

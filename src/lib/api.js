@@ -96,6 +96,17 @@ export async function cancelReservationApi({ reservationId }) {
   return handle(res); // { status: "Annulée" }
 }
 
+// --- Décision hôte sur une réservation reçue (accepter/refuser) ---
+// Met à jour le statut + notifie + e-mail le voyageur (côté serveur).
+export async function decideReservationApi({ reservationId, accept }) {
+  const res = await fetch(url("/api/reservations/decision"), {
+    method: "POST",
+    headers: await authHeaders(),
+    body: JSON.stringify({ reservationId, accept }),
+  });
+  return handle(res); // { status }
+}
+
 // --- Vérification e-mail (Resend) ---
 export async function sendVerificationEmail() {
   const res = await fetch(url("/api/auth/send-verification"), {
