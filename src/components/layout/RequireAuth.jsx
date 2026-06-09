@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
 import { useAuth } from "@/context/AuthContext";
@@ -29,6 +29,14 @@ export default function RequireAuth({ children, message = "Connectez-vous pour a
           onPress={() => router.push({ pathname: "/connexion", params: next ? { next } : {} })}
           style={{ alignSelf: "stretch", marginHorizontal: 24 }}
         />
+        <Pressable
+          onPress={() => router.push({ pathname: "/inscription", params: next ? { next } : {} })}
+          hitSlop={8}
+        >
+          <Text style={styles.createText}>
+            Pas encore de compte ? <Text style={styles.createLink}>Créer un compte</Text>
+          </Text>
+        </Pressable>
       </View>
     );
   }
@@ -52,4 +60,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 20,
   },
+  createText: { fontFamily: fonts.body, fontSize: 13.5, color: colors.muted },
+  createLink: { fontFamily: fonts.bodySemiBold, color: colors.primary },
 });
