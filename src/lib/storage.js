@@ -8,9 +8,18 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5 Mo
 
+// Sous Hermes/RN, `fetch(uri).blob()` produit un blob que le SDK Firebase ne
+// sait pas réuploader (« Creating blobs from 'ArrayBuffer'… not supported »).
+// XMLHttpRequest renvoie un blob natif RN compatible avec uploadBytes.
 async function uriToBlob(uri) {
-  const res = await fetch(uri);
-  const blob = await res.blob();
+  const blob = await new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => resolve(xhr.response);
+    xhr.onerror = () => reject(new Error("Lecture de l'image impossible."));
+    xhr.responseType = "blob";
+    xhr.open("GET", uri, true);
+    xhr.send(null);
+  });
   if (blob.size > MAX_SIZE) throw new Error("Image trop volumineuse (max 5 Mo).");
   return blob;
 }
