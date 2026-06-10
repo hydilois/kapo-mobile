@@ -115,9 +115,29 @@ export default function HostReservations() {
                   <Text style={[styles.badgeText, { color: badge.fg }]}>{item.status}</Text>
                 </View>
               </View>
-              {item.voyageurEmail ? (
-                <Text style={styles.muted}>
-                  <Feather name="user" size={12} color={colors.muted} /> {item.voyageurEmail}
+              {/* Aperçu profil voyageur (façon Airbnb) : confiance avant décision */}
+              <View style={styles.guestRow}>
+                <Feather name="user" size={12} color={colors.muted} />
+                <Text style={styles.guestName} numberOfLines={1}>
+                  {item.voyageurName || item.voyageurEmail || "Voyageur"}
+                </Text>
+                {item.voyageurVerified ? (
+                  <View style={styles.verifBadge}>
+                    <Feather name="check-circle" size={10} color={colors.success || "#16a34a"} />
+                    <Text style={styles.verifText}>Vérifié</Text>
+                  </View>
+                ) : null}
+              </View>
+              {item.voyageurName && item.voyageurEmail ? (
+                <Text style={styles.guestSub}>{item.voyageurEmail}</Text>
+              ) : null}
+              {(item.voyageurPhone || item.voyageurSince || typeof item.voyageurTripsCount === "number") ? (
+                <Text style={styles.guestSub}>
+                  {[
+                    item.voyageurPhone,
+                    item.voyageurSince ? `Membre depuis ${formatDate(item.voyageurSince)}` : null,
+                    typeof item.voyageurTripsCount === "number" ? `${item.voyageurTripsCount} réservation(s)` : null,
+                  ].filter(Boolean).join("  ·  ")}
                 </Text>
               ) : null}
               <Text style={styles.muted}>
@@ -170,6 +190,19 @@ const styles = StyleSheet.create({
   badge: { borderRadius: 999, paddingHorizontal: 9, paddingVertical: 3 },
   badgeText: { fontFamily: fonts.bodySemiBold, fontSize: 11 },
   muted: { fontFamily: fonts.body, fontSize: 12.5, color: colors.muted },
+  guestRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+  guestName: { flexShrink: 1, fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.ink },
+  verifBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    backgroundColor: "#ECFDF3",
+    borderRadius: 999,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+  },
+  verifText: { fontFamily: fonts.bodySemiBold, fontSize: 10.5, color: "#16a34a" },
+  guestSub: { fontFamily: fonts.body, fontSize: 11.5, color: colors.muted },
   amounts: { marginTop: 4, gap: 2 },
   amountLabel: { fontFamily: fonts.body, fontSize: 12.5, color: colors.muted },
   amountVal: { fontFamily: fonts.bodySemiBold, color: colors.ink },

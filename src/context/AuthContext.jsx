@@ -42,15 +42,25 @@ export function AuthProvider({ children }) {
       return;
     }
     const unsub = onAuthStateChanged(auth, async (fbUser) => {
-      setUser(fbUser);
       if (fbUser) {
         const p = await loadProfile(fbUser.uid).catch(() => null);
+        // SÉCURITÉ : un compte banni est immédiatement déconnecté (le serveur
+        // applique aussi la règle aux réservations via assertNotBanned).
+        if (p?.isBanned) {
+          await signOut(auth).catch(() => {});
+          setUser(null);
+          setProfile(null);
+          setLoading(false);
+          return;
+        }
+        setUser(fbUser);
         setProfile(p);
         // Synchronise le statut vérifié dans Firestore (pour le badge admin)
         if (fbUser.emailVerified && p && !p.isVerified) {
           updateDoc(doc(db, COLLECTIONS.USERS, fbUser.uid), { isVerified: true }).catch(() => {});
         }
       } else {
+        setUser(null);
         setProfile(null);
       }
       setLoading(false);
@@ -58,8 +68,17 @@ export function AuthProvider({ children }) {
     return unsub;
   }, []);
 
-  function login(email, password) {
-    return signInWithEmailAndPassword(auth, email, password);
+  async function login(email, password) {
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    // SÉCURITÉ : refuse la connexion d'un compte banni.
+    const p = await loadProfile(cred.user.uid).catch(() => null);
+    if (p?.isBanned) {
+      await signOut(auth).catch(() => {});
+      const err = new Error("Votre compte a été suspendu. Contactez le support Kapo.");
+      err.code = "auth/account-banned";
+      throw err;
+    }
+    return cred;
   }
 
   async function register({ email, password, firstName, lastName, phoneNumber }) {

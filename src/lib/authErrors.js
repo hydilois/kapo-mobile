@@ -14,6 +14,7 @@ export function authErrorMessage(err) {
     "auth/wrong-password": "E-mail ou mot de passe incorrect.",
     "auth/user-not-found": "E-mail ou mot de passe incorrect.",
     "auth/too-many-requests": "Trop de tentatives. Réessayez plus tard.",
+    "auth/account-banned": "Votre compte a été suspendu. Contactez le support Kapo.",
     "auth/network-request-failed": "Problème de connexion réseau. Réessayez.",
     "permission-denied":
       "Accès refusé par les règles Firestore. Vérifiez que les règles sont déployées.",
