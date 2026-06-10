@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "701446114496",
+    "project_id": "kapo-b451a",
+    "storage_bucket": "kapo-b451a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701446114496:android:0871658c5294d5c7c2b125",
+        "android_client_info": {
+          "package_name": "com.kapo.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoh7jHQICJzkQt2x_0KM7MgHwNIa87wJs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
