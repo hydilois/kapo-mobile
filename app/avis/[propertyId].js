@@ -2,8 +2,7 @@ import { useState } from "react";
 import { View, Text, TextInput, Pressable, ScrollView, StyleSheet } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
-import { addComment } from "@/lib/data/comments";
-import { useAuth } from "@/context/AuthContext";
+import { createReviewApi } from "@/lib/api";
 import RequireAuth from "@/components/layout/RequireAuth";
 import Button from "@/components/ui/Button";
 import { colors, fonts, radius } from "@/theme";
@@ -20,7 +19,6 @@ export default function AddReviewScreen() {
 function AddReviewContent() {
   const router = useRouter();
   const { propertyId } = useLocalSearchParams();
-  const { user, profile } = useAuth();
 
   const [rating, setRating] = useState(5);
   const [content, setContent] = useState("");
@@ -35,19 +33,9 @@ function AddReviewContent() {
     setError("");
     setLoading(true);
     try {
-      await addComment({
-        propertyId,
-        author: {
-          uid: user.uid,
-          name:
-            [profile?.firstName, profile?.lastName].filter(Boolean).join(" ") ||
-            user.displayName ||
-            "Utilisateur Kapo",
-          imageUrl: profile?.imageUrl || "",
-        },
-        content,
-        rating,
-      });
+      // Avis vérifié : le serveur exige une réservation « Terminée » et
+      // renvoie un message clair (403) si ce n'est pas le cas.
+      await createReviewApi({ propertyId, content, rating });
       router.back();
     } catch (err) {
       setError(err?.message || "Une erreur est survenue. Réessayez.");

@@ -125,3 +125,13 @@ export async function notifyAdminReport({ propertyId, propertyTitle, reason, det
   });
   return handle(res);
 }
+
+// --- Avis vérifié (réservé aux voyageurs ayant séjourné) ---
+export async function createReviewApi({ propertyId, content, rating }) {
+  const res = await fetch(url("/api/reviews"), {
+    method: "POST",
+    headers: await authHeaders(),
+    body: JSON.stringify({ propertyId, content, rating }),
+  });
+  return handle(res); // { id, rating, ratingCount }
+}

@@ -146,7 +146,15 @@ export default function PropertyDetailScreen() {
           comments.map((c) => (
             <View key={c.id} style={styles.comment}>
               <View style={styles.commentHeader}>
-                <Text style={styles.commentAuthor}>{c.writerName || "Utilisateur Kapo"}</Text>
+                <View style={styles.commentAuthorRow}>
+                  <Text style={styles.commentAuthor}>{c.writerName || "Utilisateur Kapo"}</Text>
+                  {c.verifiedStay ? (
+                    <View style={styles.verifBadge}>
+                      <Feather name="check-circle" size={9} color="#16a34a" />
+                      <Text style={styles.verifText}>Séjour vérifié</Text>
+                    </View>
+                  ) : null}
+                </View>
                 {c.rating > 0 ? (
                   <View style={styles.rating}>
                     <Feather name="star" size={12} color={colors.secondary} />
@@ -156,6 +164,14 @@ export default function PropertyDetailScreen() {
               </View>
               <Text style={styles.commentText}>{c.content}</Text>
               <Text style={styles.commentDate}>{formatDate(c.createdAt)}</Text>
+              {c.hostReply ? (
+                <View style={styles.hostReply}>
+                  <Text style={styles.hostReplyLabel}>
+                    <Feather name="corner-down-right" size={11} color={colors.secondary} /> Réponse de {c.hostReplyName || "l'hôte"}
+                  </Text>
+                  <Text style={styles.hostReplyText}>{c.hostReply}</Text>
+                </View>
+              ) : null}
             </View>
           ))
         ) : (
@@ -214,9 +230,29 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   commentHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  commentAuthorRow: { flexDirection: "row", alignItems: "center", gap: 6, flexShrink: 1 },
   commentAuthor: { fontFamily: fonts.bodySemiBold, fontSize: 13, color: colors.ink },
+  verifBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 2,
+    backgroundColor: "#ECFDF3",
+    borderRadius: 999,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+  },
+  verifText: { fontFamily: fonts.bodySemiBold, fontSize: 9.5, color: "#16a34a" },
   commentText: { fontFamily: fonts.body, fontSize: 13, color: colors.ink, lineHeight: 19 },
   commentDate: { fontFamily: fonts.body, fontSize: 11, color: colors.muted },
+  hostReply: {
+    marginTop: 6,
+    backgroundColor: colors.surface,
+    borderRadius: radius.kapo,
+    padding: 10,
+    gap: 3,
+  },
+  hostReplyLabel: { fontFamily: fonts.bodySemiBold, fontSize: 12, color: colors.secondary },
+  hostReplyText: { fontFamily: fonts.body, fontSize: 12.5, color: colors.ink, lineHeight: 18 },
   empty: { fontFamily: fonts.body, fontSize: 13, color: colors.muted },
   galleryActions: {
     position: "absolute",
