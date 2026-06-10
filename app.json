@@ -34,7 +34,13 @@
         }
       ],
       "expo-image",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-notifications",
+        {
+          "color": "#F26178"
+        }
+      ]
     ],
     "extra": {
       "router": {},

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import * as Notifications from "expo-notifications";
 import * as SplashScreen from "expo-splash-screen";
 import {
   useFonts,
@@ -18,6 +19,25 @@ import { AuthProvider } from "@/context/AuthContext";
 import { colors, fonts } from "@/theme";
 
 SplashScreen.preventAutoHideAsync();
+
+// Route vers le bon écran quand l'utilisateur tape sur une notification push.
+function PushTapHandler() {
+  const router = useRouter();
+  useEffect(() => {
+    function handle(response) {
+      const data = response?.notification?.request?.content?.data || {};
+      if (data.type === "message" && data.conversationId) {
+        router.push(`/messages/${data.conversationId}`);
+      } else if (data.type === "reservation") {
+        router.push("/(tabs)/reservations");
+      }
+    }
+    Notifications.getLastNotificationResponseAsync().then((r) => r && handle(r));
+    const sub = Notifications.addNotificationResponseReceivedListener(handle);
+    return () => sub.remove();
+  }, []);
+  return null;
+}
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -39,6 +59,7 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <StatusBar style="dark" />
+      <PushTapHandler />
       <Stack
         screenOptions={{
           headerTintColor: colors.navy,

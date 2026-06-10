@@ -13,6 +13,7 @@ import {
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { COLLECTIONS, ROLES } from "@/lib/constants";
+import { registerForPush } from "@/lib/push";
 
 const AuthContext = createContext({
   user: null,
@@ -59,6 +60,8 @@ export function AuthProvider({ children }) {
         if (fbUser.emailVerified && p && !p.isVerified) {
           updateDoc(doc(db, COLLECTIONS.USERS, fbUser.uid), { isVerified: true }).catch(() => {});
         }
+        // Enregistre le jeton push de l'appareil (best-effort, standalone uniquement)
+        registerForPush(fbUser.uid).catch(() => {});
       } else {
         setUser(null);
         setProfile(null);
