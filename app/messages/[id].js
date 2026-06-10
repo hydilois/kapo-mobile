@@ -32,9 +32,15 @@ function ConversationContent() {
   useEffect(() => {
     if (!user) return;
     getConversation(convId).then((c) => { if (c) { setConv(c); setStarted(true); } });
+  }, [convId, user?.uid]);
+
+  // Re-souscrit après la création du fil (un nouveau fil n'est lisible
+  // qu'une fois sa conversation créée).
+  useEffect(() => {
+    if (!user) return;
     const unsub = listenMessages(convId, setMessages);
     return unsub;
-  }, [convId, user?.uid]);
+  }, [convId, user?.uid, started]);
 
   useEffect(() => {
     if (started) markConversationReadApi({ convId }).catch(() => {});

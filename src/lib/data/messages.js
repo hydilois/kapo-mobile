@@ -30,8 +30,12 @@ export function listenMessages(convId, cb) {
 
 export async function getConversation(convId) {
   if (!db || !convId) return null;
-  const snap = await getDoc(doc(db, COLLECTIONS.CONVERSATIONS, convId));
-  return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+  try {
+    const snap = await getDoc(doc(db, COLLECTIONS.CONVERSATIONS, convId));
+    return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+  } catch {
+    return null;
+  }
 }
 
 export function unreadTotal(conversations, uid) {
