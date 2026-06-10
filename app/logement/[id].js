@@ -9,6 +9,7 @@ import { useFetch } from "@/hooks/useFetch";
 import { formatDate } from "@/lib/utils";
 import Gallery from "@/components/property/Gallery";
 import BookingSection from "@/components/property/BookingSection";
+import ContactHostButton from "@/components/property/ContactHostButton";
 import FavoriteButton from "@/components/property/FavoriteButton";
 import ShareButton from "@/components/property/ShareButton";
 import ReportButton from "@/components/property/ReportButton";
@@ -137,6 +138,7 @@ export default function PropertyDetailScreen() {
         {/* Réservation */}
         <SectionTitle>Réserver ce logement</SectionTitle>
         <BookingSection property={property} />
+        <ContactHostButton property={property} />
 
         {/* Avis */}
         <SectionTitle>

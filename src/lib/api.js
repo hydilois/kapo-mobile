@@ -135,3 +135,22 @@ export async function createReviewApi({ propertyId, content, rating }) {
   });
   return handle(res); // { id, rating, ratingCount }
 }
+
+// --- Messagerie hôte ↔ voyageur ---
+export async function sendMessageApi({ convId, propertyId, content }) {
+  const res = await fetch(url("/api/messages"), {
+    method: "POST",
+    headers: await authHeaders(),
+    body: JSON.stringify({ convId, propertyId, content }),
+  });
+  return handle(res); // { conversationId, messageId }
+}
+
+export async function markConversationReadApi({ convId }) {
+  const res = await fetch(url("/api/messages/read"), {
+    method: "POST",
+    headers: await authHeaders(),
+    body: JSON.stringify({ convId }),
+  });
+  return handle(res); // { ok }
+}

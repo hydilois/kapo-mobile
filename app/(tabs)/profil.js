@@ -149,6 +149,7 @@ function ProfileContent() {
           label="Mot de passe"
           onPress={() => router.push("/compte/mot-de-passe")}
         />
+        <MenuItem icon="message-circle" label="Messagerie" onPress={() => router.push("/messages")} />
         <MenuItem icon="bell" label="Notifications" onPress={() => router.push("/notifications")} />
         <MenuItem
           icon="heart"
