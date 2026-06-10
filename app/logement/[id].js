@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { View, Text, ScrollView, ActivityIndicator, Pressable, StyleSheet } from "react-native";
+import { View, Text, ScrollView, ActivityIndicator, Pressable, Linking, StyleSheet } from "react-native";
 import { Stack, useLocalSearchParams, useRouter, useFocusEffect } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
 import { getPropertyById } from "@/lib/data/properties";
@@ -102,6 +102,17 @@ export default function PropertyDetailScreen() {
             </View>
           ) : null}
         </View>
+        {typeof property.lat === "number" && typeof property.lng === "number" && (property.lat !== 0 || property.lng !== 0) ? (
+          <Pressable
+            style={styles.mapLink}
+            onPress={() =>
+              Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${property.lat},${property.lng}`)
+            }
+          >
+            <Feather name="map" size={14} color={colors.primary} />
+            <Text style={styles.mapLinkText}>Voir sur la carte</Text>
+          </Pressable>
+        ) : null}
 
         {/* Faits clés */}
         <View style={styles.facts}>
@@ -198,6 +209,8 @@ const styles = StyleSheet.create({
   metaRow: { flexDirection: "row", alignItems: "center", gap: 5 },
   metaText: { flex: 1, fontFamily: fonts.body, fontSize: 13, color: colors.muted },
   rating: { flexDirection: "row", alignItems: "center", gap: 3 },
+  mapLink: { flexDirection: "row", alignItems: "center", gap: 6, marginTop: 8 },
+  mapLinkText: { fontFamily: fonts.bodySemiBold, fontSize: 13, color: colors.primary },
   ratingText: { fontFamily: fonts.bodyMedium, fontSize: 12, color: colors.ink },
   facts: {
     flexDirection: "row",
