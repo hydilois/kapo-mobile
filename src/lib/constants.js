@@ -16,6 +16,8 @@ export const COLLECTIONS = {
   BANK: "bank", // configuration paiement globale (singleton)
   REPORTS: "reports", // signalements d'annonces
   PAYOUTS: "payouts", // versements dus aux hôtes
+  CONVERSATIONS: "conversations", // fils de discussion hôte ↔ voyageur
+  MESSAGES: "messages", // messages d'un fil de discussion
 };
 
 // Statuts d'un versement à l'hôte (payout).
