@@ -6,7 +6,7 @@ import { Image } from "expo-image";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import Feather from "@expo/vector-icons/Feather";
-import { getCategories, getTowns, getConforts } from "@/lib/data/taxonomy";
+import { getCategories, getTowns, getConforts, getRegions, getDepartments } from "@/lib/data/taxonomy";
 import { getProperty, createProperty, updateProperty } from "@/lib/data/host";
 import { uploadPropertyImage, deleteStorageObject } from "@/lib/storage";
 import { useAuth } from "@/context/AuthContext";
@@ -29,13 +29,15 @@ export default function PropertyFormScreen() {
   const isEdit = id && id !== "nouvelle";
 
   const { data, loading } = useFetch(async () => {
-    const [categories, towns, conforts, existing] = await Promise.all([
+    const [categories, towns, conforts, regions, departments, existing] = await Promise.all([
       getCategories(),
       getTowns(),
       getConforts(),
+      getRegions(),
+      getDepartments(),
       isEdit ? getProperty(id) : Promise.resolve(null),
     ]);
-    return { categories, towns, conforts, existing };
+    return { categories, towns, conforts, regions, departments, existing };
   }, [id]);
 
   if (loading) {
@@ -58,7 +60,7 @@ export default function PropertyFormScreen() {
   return <Form isEdit={isEdit} propertyId={id} {...data} />;
 }
 
-function Form({ isEdit, propertyId, categories = [], towns = [], conforts = [], existing }) {
+function Form({ isEdit, propertyId, categories = [], towns = [], conforts = [], regions = [], departments = [], existing }) {
   const router = useRouter();
   const { user } = useAuth();
   const [step, setStep] = useState(0);
@@ -67,10 +69,17 @@ function Form({ isEdit, propertyId, categories = [], towns = [], conforts = [], 
   const [uploading, setUploading] = useState(false);
   const [photoUrl, setPhotoUrl] = useState("");
 
+  // Région/département dérivés de la ville pour une annonce existante.
+  const initTown = existing?.townId ? towns.find((t) => t.id === existing.townId) : null;
+
   const [form, setForm] = useState(() => ({
     title: existing?.title || "",
     categoryId: existing?.categoryId || "",
+    regionId: existing?.regionId || initTown?.regionId || "",
+    departmentId: existing?.departmentId || initTown?.departmentId || "",
     townId: existing?.townId || "",
+    lat: typeof existing?.lat === "number" ? existing.lat : null,
+    lng: typeof existing?.lng === "number" ? existing.lng : null,
     address: existing?.address || "",
     description: existing?.description || "",
     debutDisponibilite: existing?.debutDisponibilite || "",
@@ -139,8 +148,8 @@ function Form({ isEdit, propertyId, categories = [], towns = [], conforts = [], 
   }
 
   function validateStep() {
-    if (step === 0 && (!form.title || !form.categoryId || !form.townId || !form.price)) {
-      setError("Renseignez au moins le titre, la catégorie, la ville et le prix.");
+    if (step === 0 && (!form.title || !form.categoryId || !form.regionId || !form.departmentId || !form.townId || !form.price)) {
+      setError("Renseignez le titre, la catégorie, la région, le département, la ville et le prix.");
       return false;
     }
     setError("");
@@ -205,7 +214,33 @@ function Form({ isEdit, propertyId, categories = [], towns = [], conforts = [], 
         <View style={{ gap: 12 }}>
           <TextField label="Titre de l'annonce *" value={form.title} onChangeText={(v) => set("title", v)} placeholder="Ex : Appartement moderne à Bonapriso" />
           <SelectField placeholder="Catégorie *" value={form.categoryId} onChange={(v) => set("categoryId", v)} options={categories.map((c) => ({ value: c.id, label: c.name }))} />
-          <SelectField placeholder="Ville *" value={form.townId} onChange={(v) => set("townId", v)} options={towns.map((t) => ({ value: t.id, label: t.name }))} />
+          {/* Cascade Région → Département → Ville */}
+          <SelectField
+            placeholder="Région *"
+            value={form.regionId}
+            onChange={(v) => setForm((f) => ({ ...f, regionId: v, departmentId: "", townId: "" }))}
+            options={regions.map((r) => ({ value: r.id, label: r.name }))}
+          />
+          <SelectField
+            placeholder={form.regionId ? "Département *" : "Choisir une région d'abord"}
+            value={form.departmentId}
+            onChange={(v) => setForm((f) => ({ ...f, departmentId: v, townId: "" }))}
+            options={departments.filter((d) => d.regionId === form.regionId).map((d) => ({ value: d.id, label: d.name }))}
+          />
+          <SelectField
+            placeholder={form.departmentId ? "Ville *" : "Choisir un département d'abord"}
+            value={form.townId}
+            onChange={(v) => {
+              const t = towns.find((x) => x.id === v);
+              setForm((f) => ({
+                ...f,
+                townId: v,
+                lat: f.lat == null && t?.lat != null ? t.lat : f.lat,
+                lng: f.lng == null && t?.lng != null ? t.lng : f.lng,
+              }));
+            }}
+            options={towns.filter((t) => t.departmentId === form.departmentId).map((t) => ({ value: t.id, label: t.name }))}
+          />
           <TextField label="Adresse" value={form.address} onChangeText={(v) => set("address", v)} placeholder="Quartier, ville" />
           <View>
             <Text style={styles.label}>Description</Text>

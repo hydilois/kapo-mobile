@@ -8,6 +8,8 @@ export const COLLECTIONS = {
   COMMENTS: "comments",
   CATEGORIES: "categories",
   TOWNS: "towns",
+  REGIONS: "regions",
+  DEPARTMENTS: "departments",
   CONFORTS: "conforts", // équipements
   TESTIMONIALS: "testimonials",
   PAYMENT_METHODS: "paymentMethods",

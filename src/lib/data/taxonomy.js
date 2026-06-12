@@ -16,6 +16,8 @@ async function all(name, orderField = "name") {
 
 export const getCategories = () => all(COLLECTIONS.CATEGORIES);
 export const getTowns = () => all(COLLECTIONS.TOWNS);
+export const getRegions = () => all(COLLECTIONS.REGIONS);
+export const getDepartments = () => all(COLLECTIONS.DEPARTMENTS);
 export const getConforts = () => all(COLLECTIONS.CONFORTS, "libelle");
 export const getTestimonials = () => all(COLLECTIONS.TESTIMONIALS, "author");
 
