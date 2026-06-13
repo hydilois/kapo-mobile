@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -18,6 +18,9 @@ import { colors, fonts, radius } from "@/theme";
 
 const LOGO = require("../../assets/brand/logo.png");
 
+const MAX_TRIES = 5;
+const cooldownFor = (fails) => Math.min(300, 2 ** (fails - MAX_TRIES) * 30); // 30s, 60s, 120s…
+
 export default function LoginScreen() {
   const router = useRouter();
   const { next } = useLocalSearchParams();
@@ -27,8 +30,23 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+  const failsRef = useRef(0);
+
+  // Décompte du verrouillage progressif (complète le throttling serveur)
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setInterval(() => setCooldown((s) => Math.max(0, s - 1)), 1000);
+    return () => clearInterval(t);
+  }, [cooldown]);
+
+  function lock(seconds) {
+    setCooldown(seconds);
+    setError(`Trop de tentatives. Réessayez dans ${seconds >= 60 ? `${Math.ceil(seconds / 60)} min` : `${seconds} s`}.`);
+  }
 
   async function submit() {
+    if (cooldown > 0) return;
     if (!email.trim() || !password) {
       setError("Renseignez votre e-mail et votre mot de passe.");
       return;
@@ -37,11 +55,22 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await login(email.trim(), password);
+      failsRef.current = 0;
       if (next) router.replace(decodeURIComponent(String(next)));
       else if (router.canGoBack()) router.back();
       else router.replace("/(tabs)");
     } catch (err) {
-      setError(authErrorMessage(err));
+      if (err.code === "auth/too-many-requests" && err.retryAfter) {
+        lock(err.retryAfter);
+      } else {
+        failsRef.current += 1;
+        if (failsRef.current >= MAX_TRIES) {
+          lock(cooldownFor(failsRef.current));
+        } else {
+          const left = typeof err.attemptsLeft === "number" ? err.attemptsLeft : MAX_TRIES - failsRef.current;
+          setError(`${authErrorMessage(err)}${left > 0 ? ` (${left} tentative(s) restante(s))` : ""}`);
+        }
+      }
     } finally {
       setLoading(false);
     }
@@ -79,7 +108,12 @@ export default function LoginScreen() {
           <Text style={styles.link}>Mot de passe oublié ?</Text>
         </Pressable>
 
-        <Button title="Se connecter" onPress={submit} loading={loading} />
+        <Button
+          title={cooldown > 0 ? `Réessayez dans ${cooldown}s` : "Se connecter"}
+          onPress={submit}
+          loading={loading}
+          disabled={cooldown > 0}
+        />
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>Pas encore de compte ?</Text>

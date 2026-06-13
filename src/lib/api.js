@@ -19,6 +19,26 @@ async function handle(res) {
 
 const url = (path) => `${API_BASE_URL}${path}`;
 
+// Connexion via le proxy serveur (throttling + contrôle bannissement).
+// Pas d'en-tête d'auth : on n'est pas encore connecté. Renvoie { token } (jeton
+// personnalisé) ou lève une erreur portant code/retryAfter/attemptsLeft.
+export async function loginApi({ email, password }) {
+  const res = await fetch(url("/api/auth/login"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const err = new Error(data.error || "Connexion impossible.");
+    err.code = data.code;
+    err.retryAfter = data.retryAfter;
+    err.attemptsLeft = data.attemptsLeft;
+    throw err;
+  }
+  return data; // { token }
+}
+
 export async function createReservation({ propertyId, arrivee, depart }) {
   const res = await fetch(url("/api/reservations"), {
     method: "POST",

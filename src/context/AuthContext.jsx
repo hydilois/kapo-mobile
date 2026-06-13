@@ -5,7 +5,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import {
   onAuthStateChanged,
-  signInWithEmailAndPassword,
+  signInWithCustomToken,
   createUserWithEmailAndPassword,
   updateProfile,
   signOut,
@@ -14,6 +14,7 @@ import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firest
 import { auth, db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { COLLECTIONS, ROLES } from "@/lib/constants";
 import { registerForPush } from "@/lib/push";
+import { loginApi } from "@/lib/api";
 
 const AuthContext = createContext({
   user: null,
@@ -72,16 +73,10 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function login(email, password) {
-    const cred = await signInWithEmailAndPassword(auth, email, password);
-    // SÉCURITÉ : refuse la connexion d'un compte banni.
-    const p = await loadProfile(cred.user.uid).catch(() => null);
-    if (p?.isBanned) {
-      await signOut(auth).catch(() => {});
-      const err = new Error("Votre compte a été suspendu. Contactez le support Kapo.");
-      err.code = "auth/account-banned";
-      throw err;
-    }
-    return cred;
+    // Connexion via le proxy serveur (throttling non contournable + contrôle
+    // de bannissement). Renvoie un jeton personnalisé à échanger côté client.
+    const { token } = await loginApi({ email, password });
+    return signInWithCustomToken(auth, token);
   }
 
   async function register({ email, password, firstName, lastName, phoneNumber }) {
