@@ -66,7 +66,7 @@ export default function HomeScreen() {
       getFeaturedProperties({ max: 8 }),
     ]);
     return { categories, towns, testimonials, featured };
-  }, []);
+  }, [], { cacheKey: "cache:home" });
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

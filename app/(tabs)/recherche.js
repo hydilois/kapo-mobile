@@ -30,7 +30,7 @@ export default function SearchScreen() {
   const taxonomy = useFetch(async () => {
     const [towns, categories] = await Promise.all([getActiveTowns(), getCategories()]);
     return { towns, categories };
-  }, []);
+  }, [], { cacheKey: "cache:search-taxonomy" });
 
   const results = useFetch(
     () =>
