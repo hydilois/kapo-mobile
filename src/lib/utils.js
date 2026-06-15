@@ -26,6 +26,18 @@ export function formatDate(value) {
   return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(d);
 }
 
+// Normalise un numéro camerounais en E.164 (+237XXXXXXXXX). null si invalide.
+export function normalizeCameroonPhone(raw) {
+  if (!raw) return null;
+  let d = String(raw).replace(/[^\d+]/g, "");
+  if (d.startsWith("+")) return /^\+\d{8,15}$/.test(d) ? d : null;
+  d = d.replace(/^00/, "");
+  if (d.startsWith("237")) d = d.slice(3);
+  if (d.length === 9 && /^[26]/.test(d)) return `+237${d}`;
+  if (d.length >= 8 && d.length <= 15) return `+${d}`;
+  return null;
+}
+
 // Nombre de nuits entre deux dates
 export function nightsBetween(arrivee, depart) {
   const a = new Date(arrivee);

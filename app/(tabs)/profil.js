@@ -11,6 +11,7 @@ import { uploadUserAvatar, deleteStorageObject } from "@/lib/storage";
 import { updateUserAvatar } from "@/lib/data/profile";
 import { sendVerificationEmail } from "@/lib/api";
 import RequireAuth from "@/components/layout/RequireAuth";
+import PhoneVerification from "@/components/account/PhoneVerification";
 import Button from "@/components/ui/Button";
 import { colors, fonts, radius } from "@/theme";
 
@@ -126,6 +127,9 @@ function ProfileContent() {
           ) : null}
         </View>
       ) : null}
+
+      {/* Vérification du numéro de téléphone (OTP SMS) */}
+      <PhoneVerification />
 
       {/* Bascule Espace hôte */}
       <Pressable style={styles.hostBanner} onPress={() => router.push("/hote")}>

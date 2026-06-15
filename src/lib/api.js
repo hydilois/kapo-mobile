@@ -156,6 +156,25 @@ export async function createReviewApi({ propertyId, content, rating }) {
   return handle(res); // { id, rating, ratingCount }
 }
 
+// --- Vérification du téléphone (OTP SMS) ---
+export async function sendPhoneCodeApi({ phoneNumber }) {
+  const res = await fetch(url("/api/auth/phone/send-code"), {
+    method: "POST",
+    headers: await authHeaders(),
+    body: JSON.stringify({ phoneNumber }),
+  });
+  return handle(res); // { sent, simulated, phone }
+}
+
+export async function verifyPhoneCodeApi({ code }) {
+  const res = await fetch(url("/api/auth/phone/verify"), {
+    method: "POST",
+    headers: await authHeaders(),
+    body: JSON.stringify({ code }),
+  });
+  return handle(res); // { verified, phone }
+}
+
 // --- Messagerie hôte ↔ voyageur ---
 export async function sendMessageApi({ convId, propertyId, content }) {
   const res = await fetch(url("/api/messages"), {

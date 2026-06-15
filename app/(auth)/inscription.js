@@ -13,6 +13,7 @@ import Feather from "@expo/vector-icons/Feather";
 import { useAuth } from "@/context/AuthContext";
 import { authErrorMessage } from "@/lib/authErrors";
 import { sendVerificationEmail } from "@/lib/api";
+import { normalizeCameroonPhone } from "@/lib/utils";
 import { TextField, PasswordField } from "@/components/ui/TextField";
 import Button from "@/components/ui/Button";
 import { colors, fonts, radius } from "@/theme";
@@ -40,6 +41,11 @@ export default function RegisterScreen() {
       setError("Le mot de passe doit contenir au moins 6 caractères.");
       return;
     }
+    const phone = normalizeCameroonPhone(phoneNumber);
+    if (!phone) {
+      setError("Numéro de téléphone invalide (ex : +237 6XX XX XX XX).");
+      return;
+    }
     setError("");
     setLoading(true);
     try {
@@ -48,7 +54,7 @@ export default function RegisterScreen() {
         password,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
-        phoneNumber: phoneNumber.trim(),
+        phoneNumber: phone,
       });
       // E-mail de vérification (best-effort, comme sur le web)
       sendVerificationEmail().catch(() => {});
@@ -118,7 +124,7 @@ export default function RegisterScreen() {
           placeholder="vous@exemple.com"
         />
         <TextField
-          label="Téléphone (optionnel)"
+          label="Téléphone"
           value={phoneNumber}
           onChangeText={setPhoneNumber}
           keyboardType="phone-pad"
