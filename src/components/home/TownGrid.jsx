@@ -1,12 +1,14 @@
 import { View, Text, Pressable, FlatList, StyleSheet } from "react-native";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { resolveImageUrl } from "@/lib/config";
+import { imgSource } from "@/lib/config";
+import { useDataSaver } from "@/context/DataSaverContext";
 import { colors, fonts, radius } from "@/theme";
 
 // Villes du Cameroun — liste horizontale (web : grille image + nom en overlay).
 export default function TownGrid({ towns = [] }) {
   const router = useRouter();
+  const { dataSaver } = useDataSaver();
   if (!towns.length) return null;
 
   return (
@@ -22,7 +24,7 @@ export default function TownGrid({ towns = [] }) {
           onPress={() => router.push({ pathname: "/(tabs)/recherche", params: { town: item.id } })}
         >
           <Image
-            source={{ uri: resolveImageUrl(item.image) }}
+            source={imgSource(item.image, 384, { dataSaver })}
             style={styles.image}
             contentFit="cover"
             transition={150}

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { View, Text, FlatList, useWindowDimensions, StyleSheet } from "react-native";
 import { Image } from "expo-image";
+import { imgSource } from "@/lib/config";
+import { useDataSaver } from "@/context/DataSaverContext";
 import { colors, fonts } from "@/theme";
 
 const FALLBACK = require("../../../assets/brand/logo-icon.png");
@@ -8,6 +10,7 @@ const FALLBACK = require("../../../assets/brand/logo-icon.png");
 // Galerie d'images — pagination horizontale + compteur "i / n".
 export default function Gallery({ property }) {
   const { width } = useWindowDimensions();
+  const { dataSaver } = useDataSaver();
   const [index, setIndex] = useState(0);
 
   const photos = [property.image, ...(property.photos || [])].filter(Boolean);
@@ -24,7 +27,7 @@ export default function Gallery({ property }) {
         onMomentumScrollEnd={(e) => setIndex(Math.round(e.nativeEvent.contentOffset.x / width))}
         renderItem={({ item }) => (
           <Image
-            source={item ? { uri: item } : FALLBACK}
+            source={item ? imgSource(item, 1080, { dataSaver }) : FALLBACK}
             style={{ width, height: 280, backgroundColor: colors.surface }}
             contentFit={item ? "cover" : "contain"}
             transition={150}

@@ -3,6 +3,8 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
 import { formatPrice } from "@/lib/utils";
+import { imgSource } from "@/lib/config";
+import { useDataSaver } from "@/context/DataSaverContext";
 import FavoriteButton from "./FavoriteButton";
 import { colors, fonts, radius } from "@/theme";
 
@@ -11,7 +13,8 @@ const FALLBACK = require("../../../assets/brand/logo-icon.png");
 // Carte logement — transposition de src/components/property/PropertyCard.jsx (web).
 export default function PropertyCard({ property, width }) {
   const router = useRouter();
-  const image = property.image || property.photos?.[0];
+  const { dataSaver } = useDataSaver();
+  const image = imgSource(property.image || property.photos?.[0], 640, { dataSaver });
 
   return (
     <Pressable
@@ -20,7 +23,7 @@ export default function PropertyCard({ property, width }) {
     >
       <View style={styles.imageWrap}>
         <Image
-          source={image ? { uri: image } : FALLBACK}
+          source={image || FALLBACK}
           style={styles.image}
           contentFit={image ? "cover" : "contain"}
           transition={150}

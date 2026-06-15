@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { View, Text, ScrollView, Pressable, Alert, StyleSheet } from "react-native";
+import { View, Text, ScrollView, Pressable, Switch, Alert, StyleSheet } from "react-native";
 import { Image } from "expo-image";
 import { useRouter, useFocusEffect } from "expo-router";
 import { useCallback } from "react";
 import * as ImagePicker from "expo-image-picker";
 import Feather from "@expo/vector-icons/Feather";
 import { useAuth } from "@/context/AuthContext";
+import { useDataSaver } from "@/context/DataSaverContext";
 import { uploadUserAvatar, deleteStorageObject } from "@/lib/storage";
 import { updateUserAvatar } from "@/lib/data/profile";
 import { sendVerificationEmail } from "@/lib/api";
@@ -35,6 +36,7 @@ function MenuItem({ icon, label, onPress, badge }) {
 function ProfileContent() {
   const router = useRouter();
   const { user, profile, logout, refreshProfile } = useAuth();
+  const { dataSaver, setDataSaver } = useDataSaver();
   const [uploading, setUploading] = useState(false);
   const [verifSent, setVerifSent] = useState(false);
 
@@ -163,12 +165,38 @@ function ProfileContent() {
         />
       </View>
 
+      {/* Économie de données (faible débit) */}
+      <View style={styles.saverRow}>
+        <Feather name="wifi-off" size={17} color={colors.navy} />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.saverLabel}>Économie de données</Text>
+          <Text style={styles.saverHint}>Images plus légères (connexion lente)</Text>
+        </View>
+        <Switch
+          value={dataSaver}
+          onValueChange={setDataSaver}
+          trackColor={{ true: colors.primary }}
+        />
+      </View>
+
       <Button title="Se déconnecter" variant="outline" onPress={logout} />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  saverRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.kapo,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+  saverLabel: { fontFamily: fonts.bodyMedium, fontSize: 14, color: colors.ink },
+  saverHint: { fontFamily: fonts.body, fontSize: 11.5, color: colors.muted },
   screen: { flex: 1, backgroundColor: colors.background },
   card: {
     alignItems: "center",

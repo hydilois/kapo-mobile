@@ -16,6 +16,7 @@ import {
   Montserrat_800ExtraBold,
 } from "@expo-google-fonts/montserrat";
 import { AuthProvider } from "@/context/AuthContext";
+import { DataSaverProvider } from "@/context/DataSaverContext";
 import { colors, fonts } from "@/theme";
 
 SplashScreen.preventAutoHideAsync();
@@ -58,6 +59,7 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
+      <DataSaverProvider>
       <StatusBar style="dark" />
       <PushTapHandler />
       <Stack
@@ -72,6 +74,7 @@ export default function RootLayout() {
         <Stack.Screen name="hote" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false, presentation: "modal" }} />
       </Stack>
+      </DataSaverProvider>
     </AuthProvider>
   );
 }

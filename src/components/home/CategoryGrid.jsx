@@ -1,12 +1,14 @@
 import { View, Text, Pressable, FlatList, StyleSheet } from "react-native";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { resolveImageUrl } from "@/lib/config";
+import { imgSource } from "@/lib/config";
+import { useDataSaver } from "@/context/DataSaverContext";
 import { colors, fonts, radius } from "@/theme";
 
 // Catégories de logements — liste horizontale (web : grille avec overlay).
 export default function CategoryGrid({ categories = [] }) {
   const router = useRouter();
+  const { dataSaver } = useDataSaver();
   if (!categories.length) return null;
 
   return (
@@ -24,7 +26,7 @@ export default function CategoryGrid({ categories = [] }) {
           }
         >
           <Image
-            source={{ uri: resolveImageUrl(item.image) }}
+            source={imgSource(item.image, 384, { dataSaver })}
             style={styles.image}
             contentFit="cover"
             transition={150}
