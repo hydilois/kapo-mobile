@@ -40,7 +40,7 @@ export async function updateProperty(id, data, { published } = {}) {
     patch.isPublished = published;
     patch.status = published ? PROPERTY_STATUS.VALIDATED : PROPERTY_STATUS.PENDING;
   }
-  await updateDoc(doc(db, COLLECTIONS.PROPERTIES, id), patch);
+  await updateDoc(doc(db, COLLECTIONS.PROPERTIES, id), patch).catch(moderationError(published));
 }
 
 export async function setPublished(id, published) {
@@ -49,7 +49,18 @@ export async function setPublished(id, published) {
     isPublished: published,
     status: published ? PROPERTY_STATUS.VALIDATED : PROPERTY_STATUS.PENDING,
     updatedAt: serverTimestamp(),
-  });
+  }).catch(moderationError(published));
+}
+
+// Une annonce masquée par la modération ne peut pas être republiée par l'hôte
+// (firestore.rules du site, SEC-03) : message lisible au lieu du refus brut.
+export const MODERATION_MESSAGE =
+  "Cette annonce a été masquée par l'équipe Kapo. Contactez le support pour la remettre en ligne.";
+function moderationError(published) {
+  return (e) => {
+    if (published === true && e?.code === "permission-denied") throw new Error(MODERATION_MESSAGE);
+    throw e;
+  };
 }
 
 export async function deleteProperty(id) {
@@ -69,7 +80,7 @@ export async function duplicateProperty(uid, propertyId) {
   const src = await getProperty(propertyId);
   if (!src) throw new Error("Annonce introuvable.");
   // On retire les champs propres à l'original
-  const { id, slug, createdAt, updatedAt, rating, isPublished, status, agentId, photoPaths, ...rest } = src;
+  const { id, slug, createdAt, updatedAt, rating, ratingCount, isPublished, status, agentId, photoPaths, ...rest } = src;
   const title = `${src.title || "Annonce"} (copie)`;
   const ref = await addDoc(collection(db, COLLECTIONS.PROPERTIES), {
     ...normalize(rest),
