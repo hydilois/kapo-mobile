@@ -45,7 +45,9 @@ function ReservationsContent() {
 
   // Une réservation « Envoyée » jamais payée peut être réglée ou annulée.
   const isUnpaidSent = (r) =>
-    r.status === RESERVATION_STATUS.SENT && !r.isClosed && (r.paidAmount || 0) === 0;
+    [RESERVATION_STATUS.SENT, RESERVATION_STATUS.ACCEPTED].includes(r.status) &&
+    !r.isClosed &&
+    (r.paidAmount || 0) === 0;
 
   function cancel(r) {
     Alert.alert(
